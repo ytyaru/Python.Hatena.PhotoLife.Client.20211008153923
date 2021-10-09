@@ -16,14 +16,24 @@ from path import Path
 class HatenaPhotoLifeRss:
     def __init__(self, hatena_id):
         self.__hatena_id = hatena_id
-    def get(self, folder:str='Hatena Blog', page:int=1):
+    def get(self, folder:str=None, page:int=1, is_sort_old:bool=False):
         folder = f'/{urllib.parse.quote(folder)}' if folder else ''
-#        url = f'https://f.hatena.ne.jp/{self.__hatena_id}{folder}/rss'
-        url = f'https://f.hatena.ne.jp/{self.__hatena_id}{folder}/rss?page={page}'
-#        url = f'https://f.hatena.ne.jp/{self.__hatena_id}{folder}/rss'
-#        url = 'https://f.hatena.ne.jp/ytyaru/cli/rss'
-#        url = 'https://f.hatena.ne.jp/ytyaru/Hatena%20Blog/rss'
+        page = f"page={page if 0 < page else 1}"
+        is_sort_old = f"sort={'old' if is_sort_old else 'new'}"
+        url = f'https://f.hatena.ne.jp/{self.__hatena_id}{folder}/rss?{page}&{is_sort_old}'
+        res = requests.get(url)
+        if res.ok: print(res.text)
+        else: show_error(res)
+
+        print('----------------')
+        print(res)
+        print('----------------')
+        print(res.content)
+        print('----------------')
+        print(res.text)
+        """
         print(url)
+        sys.exit(1)
         feed = feedparser.parse(url)
         pprint.pprint(feed, depth=1)
 #        pprint.pprint(feed['feed'])
@@ -31,7 +41,17 @@ class HatenaPhotoLifeRss:
 #        pprint.pprint(feed['entries'])
         print()
 #        print(feed)
+        """
+    def _show_error(self, res):
+        print('[ERROR] リクエストに失敗しました。HTTPステータスコードが200〜400以外です。', file=sys.stderr)
+        print(res.status_code, file=sys.stderr)
+        print(res.text, file=sys.stderr)
+        print(res)
+        res.raise_for_status()
 
 if __name__ == '__main__':
     rss = HatenaPhotoLifeRss('ytyaru')
     rss.get()
+#    rss.get('')
+#    rss.get('Hatena Blog')
+#    rss.get('日本語')

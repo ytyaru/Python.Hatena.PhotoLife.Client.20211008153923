@@ -95,6 +95,7 @@ def parse_response(res):
     print(xml['entry']['hatena:imageurl'])
     print(xml['entry']['hatena:imageurlsmall'])
     print(xml['entry']['hatena:syntax'])
+    print(re.search(r'([0-9]{14,}[pjg]):image$', xml['entry']['hatena:syntax']).group())
     
 def test_xml():
     xml = xmltodict.parse(FileReader.json(Path.here('test-3.xml')))
